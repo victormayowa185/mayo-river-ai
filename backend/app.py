@@ -3,6 +3,9 @@ import solver
 
 app = Flask(__name__)
 
+from flask_cors import CORS
+CORS(app)
+
 @app.route('/solve', methods=['POST'])
 def solve():
     # Try to get data as JSON first; if that fails, fall back to form data
