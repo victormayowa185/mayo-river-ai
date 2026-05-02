@@ -1,0 +1,286 @@
+/* Reset some basics */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background: #faf9f6;
+}
+
+/* Hero Text Section */
+.heroSection {
+  height: 30vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: white;
+  padding: 2rem;
+}
+
+.heroTitle {
+  font-size: 3rem;
+  font-weight: 700;
+  color: #2c3e50;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.startButton {
+  background: #e67e22;
+  color: white;
+  border: none;
+  padding: 1rem 2.5rem;
+  font-size: 1.3rem;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.startButton:hover {
+  background: #d35400;
+}
+
+/* River Scene */
+.riverScene {
+  position: relative;
+  width: 100%;
+  height: 60vh;
+  background: #87ceeb; /* Sky blue background */
+  overflow: hidden;
+}
+
+.riverWater {
+  position: absolute;
+  top: 50%;
+  left: -10%;
+  width: 120%;
+  height: 40px;
+  background: linear-gradient(to right, #4facfe 0%, #00f2fe 100%);
+  transform: translateY(-50%);
+  border-radius: 20px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+}
+
+/* Missionary & Cannibal Worlds (background strips) */
+.missionaryWorld {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 30%;
+  height: 100%;
+  background: linear-gradient(135deg, #f9f3e0 0%, #f5e7c8 100%);
+  clip-path: polygon(0 0, 100% 0, 85% 100%, 0% 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cannibalWorld {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 30%;
+  height: 100%;
+  background: linear-gradient(135deg, #3a5a40 0%, #588157 100%);
+  clip-path: polygon(15% 0, 100% 0, 100% 100%, 0% 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Character Groups */
+.charGroup {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+/* Individual Silhouette Icons */
+.charIcon {
+  width: 50px;
+  height: 65px;
+  background: #2c3e50;
+  border-radius: 50% 50% 0 0;
+  position: relative;
+  margin: 0 5px;
+}
+
+/* Missionaries: simple silhouette (you can add a cross or halo later) */
+.missionaryIcon {
+  background: #2c3e50;
+}
+
+/* Cannibals: add horns and red eyes */
+.cannibalIcon {
+  background: #1c1c1c;
+}
+
+.cannibalIcon::before,
+.cannibalIcon::after {
+  content: '';
+  position: absolute;
+  top: -10px;
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-bottom: 12px solid #1c1c1c;
+}
+
+.cannibalIcon::before {
+  left: 5px;
+}
+.cannibalIcon::after {
+  right: 5px;
+}
+
+.cannibalIcon::before,
+.cannibalIcon::after {
+  /* refined horn shape */
+  border-bottom: 14px solid #1c1c1c;
+}
+
+/* Red glowing eyes */
+.cannibalIcon .eye {
+  position: absolute;
+  top: 20px;
+  width: 6px;
+  height: 6px;
+  background: red;
+  border-radius: 50%;
+  box-shadow: 0 0 4px red;
+}
+/* You'll need to add the eyes with JSX spans (see below) */
+
+/* Because we can't put CSS pseudo-elements perfectly for eyes, I'll show a better way: */
+
+/* Better approach: use spans inside cannibalIcon for eyes.
+   I'll adjust the JSX accordingly. Below is the updated JSX for cannibals: */
+
+/* Boat */
+.boatCanoe {
+  position: absolute;
+  top: calc(50% - 20px);
+  left: 10%;
+  width: 80px;
+  height: 25px;
+  background: #8b4513;
+  border-radius: 0 0 40% 40%;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+}
+
+.boatCanoe::after {
+  content: '';
+  position: absolute;
+  top: -8px;
+  left: 20px;
+  width: 40px;
+  height: 8px;
+  background: #d2b48c;
+  border-radius: 50%;
+}
+
+/* Explanation Sections */
+.explanationSection {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  min-height: 50vh;
+  gap: 3rem;
+}
+
+.missionaryExplain {
+  background: #fdf6e3;
+}
+
+.cannibalExplain {
+  background: #e9f5db;
+}
+
+.togetherExplain {
+  background: #e8f4f8;
+  flex-direction: column;
+  text-align: center;
+}
+
+.explainText {
+  max-width: 500px;
+}
+
+.explainText h3 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  color: #2c3e50;
+}
+
+.explainText p {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: #444;
+}
+
+/* Large icons for explanation sections */
+.explainIcon {
+  width: 100px;
+  height: 130px;
+  background: #2c3e50;
+  border-radius: 50% 50% 0 0;
+}
+
+.missionaryLargeIcon {
+  background: #2c3e50;
+}
+
+.cannibalLargeIcon {
+  background: #1c1c1c;
+  position: relative;
+}
+
+.cannibalLargeIcon::before,
+.cannibalLargeIcon::after {
+  /* same horns CSS */
+  content: '';
+  position: absolute;
+  top: -15px;
+  border-left: 12px solid transparent;
+  border-right: 12px solid transparent;
+  border-bottom: 20px solid #1c1c1c;
+}
+
+.cannibalLargeIcon::before { left: 10px; }
+.cannibalLargeIcon::after { right: 10px; }
+
+/* All 6 mini icons (together section) */
+.allIcons {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.miniIcon {
+  width: 40px;
+  height: 50px;
+  border-radius: 50% 50% 0 0;
+}
+
+.missionaryMini { background: #2c3e50; }
+.cannibalMini { background: #1c1c1c; }
+
+/* Rear left/right offsets for choir arrangement (adjust positions) */
+.rearLeft {
+  transform: translate(-20px, -25px);
+}
+
+.frontCenter {
+  z-index: 2;
+}
+
+.rearRight {
+  transform: translate(20px, -25px);
+}
