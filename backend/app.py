@@ -1,14 +1,12 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 import solver
 
 app = Flask(__name__)
-
-from flask_cors import CORS
 CORS(app)
 
 @app.route('/solve', methods=['POST'])
 def solve():
-    # Try to get data as JSON first; if that fails, fall back to form data
     if request.is_json:
         data = request.get_json()
         algo = data.get('algorithm', 'bfs')
@@ -38,6 +36,7 @@ def solve():
         "solution": steps,
         "message": "Solution found"
     })
+
 @app.route('/')
 def home():
     return '''
@@ -45,9 +44,7 @@ def home():
     <form method="POST" action="/solve">
       <label>Algorithm: 
         <select name="algorithm">
-          <option value="bfs">BFS</option/
-__pycache__/
-*.pycon>
+          <option value="bfs">BFS</option>
           <option value="dfs">DFS</option>
         </select>
       </label>
