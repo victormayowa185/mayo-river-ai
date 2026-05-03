@@ -16,7 +16,7 @@ import {
   FaRedoAlt,
   FaCheck,
   FaCloud,
-  FaSpinner, // new spinner icon
+  FaSpinner,
 } from "react-icons/fa";
 import canoeImg from "../assets/canoe.png";
 import missionaryImg from "../assets/miss.png";
@@ -28,26 +28,23 @@ const SolverPage = () => {
   const [algorithm, setAlgorithm] = useState("bfs");
   const [solution, setSolution] = useState(null);
   const [currentStep, setCurrentStep] = useState(0);
-  const [displayedStep, setDisplayedStep] = useState(0);
+  const [displayedStep, setDisplayedStep] = useState(0); // synced with boat
   const [playing, setPlaying] = useState(false);
-  const [loading, setLoading] = useState(false); // for API call feedback
+  const [loading, setLoading] = useState(false); // API call feedback
   const timerRef = useRef(null);
   const boatRef = useRef(null);
   const initializedRef = useRef(false);
 
   // ---------- Wake up Render API as soon as page loads ----------
   useEffect(() => {
-    // Ping the home route to start waking the free instance
     fetch("https://mayosearch.onrender.com/")
       .then(() => console.log("Backend is awake"))
-      .catch(() =>
-        console.warn("Backend ping failed, but it might still wake."),
-      );
+      .catch(() => console.warn("Backend ping failed, might still wake."));
   }, []);
 
-  // ---------- Solve handler (with loading state) ----------
+  // ---------- Handle solve with loading state ----------
   const handleSolve = async () => {
-    setSolution(null); // reset button
+    setSolution(null); // reset button to "Solve"
     setLoading(true); // show spinner
     try {
       const response = await fetch("https://mayosearch.onrender.com/solve", {
@@ -105,7 +102,7 @@ const SolverPage = () => {
     });
   }, [solution]);
 
-  // Auto‑play timer (2.5s)
+  // Auto‑play timer (2.5s between steps)
   useEffect(() => {
     if (playing && solution) {
       timerRef.current = setInterval(advanceStep, 2500);
@@ -129,13 +126,14 @@ const SolverPage = () => {
     if (currentStep > 0) setCurrentStep((prev) => prev - 1);
   };
 
-  // Current visual state from displayedStep (boat‑synced)
+  // ----- Current visual state comes from displayedStep (boat‑synced) -----
   const currentState = solution?.[displayedStep] || {
     left_missionaries: 3,
     left_cannibals: 3,
     boat: "left",
   };
 
+  // ----- Boat animation with onComplete sync -----
   useLayoutEffect(() => {
     if (!solution || !boatRef.current) return;
     const targetLeft = currentState.boat === "left" ? "5%" : "85%";
@@ -143,7 +141,10 @@ const SolverPage = () => {
       left: targetLeft,
       duration: 2,
       ease: "power2.inOut",
-      onComplete: () => setDisplayedStep(currentStep),
+      onComplete: () => {
+        // Only update the characters after the boat finishes moving
+        setDisplayedStep(currentStep);
+      },
     });
     if (!initializedRef.current) {
       gsap.set(boatRef.current, { left: targetLeft });
@@ -154,6 +155,7 @@ const SolverPage = () => {
     return () => tween.kill();
   }, [solution, currentStep]);
 
+  // Idle bobbing
   useLayoutEffect(() => {
     if (!boatRef.current) return;
     gsap.to(boatRef.current, {
