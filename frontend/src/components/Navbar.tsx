@@ -24,7 +24,7 @@ const Navbar = () => {
   return (
     <nav className="navbar">
       <Link to="/" className="navbar-logo" onClick={closeMenu}>
-        MAYO<span className="logo-dot">.</span>
+        EBUKA<span className="logo-dot">.</span>
       </Link>
 
       <button
@@ -43,15 +43,6 @@ const Navbar = () => {
         <Link to="/contact" className="navbar-icon" onClick={closeMenu}>
           <FaEnvelope size={22} />
         </Link>
-        <a
-          href="https://victormayowa.vercel.app"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="navbar-icon"
-          onClick={closeMenu}
-        >
-          <FaUserCircle size={24} />
-        </a>
       </div>
     </nav>
   );

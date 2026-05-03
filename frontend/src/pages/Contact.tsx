@@ -12,8 +12,8 @@ const Contact = () => (
         <br />
         I'd love to hear from you.
       </p>
-      <a href="mailto:victormayowa185@gmail.com" className="contact-email">
-        victormayowa185@gmail.com
+      <a href="mailto:agumicheal98@gmail.com" className="contact-email">
+        agumicheal98@gmail.com
       </a>
       <Link to="/" className="contact-back">
         ← Back to Home
