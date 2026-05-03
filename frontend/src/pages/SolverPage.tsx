@@ -27,6 +27,7 @@ const SolverPage = () => {
   const [algorithm, setAlgorithm] = useState("bfs");
   const [solution, setSolution] = useState(null);
   const [currentStep, setCurrentStep] = useState(0);
+  const [displayedStep, setDisplayedStep] = useState(0); // NEW: syncs with boat
   const [playing, setPlaying] = useState(false);
   const timerRef = useRef(null);
   const boatRef = useRef(null);
@@ -34,7 +35,7 @@ const SolverPage = () => {
 
   // Fetch solution from live API
   const handleSolve = async () => {
-    setSolution(null); // ← instantly reset the button to "Solve"
+    setSolution(null); // instantly reset the button to "Solve"
     try {
       const response = await fetch("https://mayosearch.onrender.com/solve", {
         method: "POST",
@@ -45,6 +46,7 @@ const SolverPage = () => {
       if (data.solution) {
         setSolution(data.solution);
         setCurrentStep(0);
+        setDisplayedStep(0); // reset displayed step
         setPlaying(false); // do NOT auto‑play
         initializedRef.current = false;
       } else {
@@ -90,10 +92,10 @@ const SolverPage = () => {
     });
   }, [solution]);
 
-  // Auto‑play timer
+  // Auto‑play timer – slower step interval (2.5s)
   useEffect(() => {
     if (playing && solution) {
-      timerRef.current = setInterval(advanceStep, 1500);
+      timerRef.current = setInterval(advanceStep, 2500); // was 1500
     } else {
       clearInterval(timerRef.current);
     }
@@ -116,27 +118,36 @@ const SolverPage = () => {
     if (currentStep > 0) setCurrentStep((prev) => prev - 1);
   };
 
-  const currentState = solution?.[currentStep] || {
+  // Use displayedStep to get the actual visual state (syncs with boat)
+  const currentState = solution?.[displayedStep] || {
     left_missionaries: 3,
     left_cannibals: 3,
     boat: "left",
   };
 
-  // Boat animation (sailing)
+  // Boat animation (sailing) – now synced with displayedStep
   useLayoutEffect(() => {
     if (!solution || !boatRef.current) return;
     const targetLeft = currentState.boat === "left" ? "5%" : "85%";
+    const tween = gsap.to(boatRef.current, {
+      left: targetLeft,
+      duration: 2, // slower sailing (was 1)
+      ease: "power2.inOut",
+      onComplete: () => {
+        // Only update the displayed characters after the boat arrives
+        setDisplayedStep(currentStep);
+      },
+    });
+
     if (!initializedRef.current) {
       gsap.set(boatRef.current, { left: targetLeft });
       initializedRef.current = true;
-    } else {
-      gsap.to(boatRef.current, {
-        left: targetLeft,
-        duration: 1,
-        ease: "power2.inOut",
-      });
+      setDisplayedStep(0); // ensure initial state is shown immediately
+      tween.kill(); // prevent the first tween from firing
     }
-  }, [solution, currentStep]);
+
+    return () => tween.kill();
+  }, [solution, currentStep]); // runs whenever currentStep changes
 
   // Idle bobbing
   useLayoutEffect(() => {
