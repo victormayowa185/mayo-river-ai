@@ -116,7 +116,7 @@ body {
 }
 .togetherExplain {
   background: #e8f4f8;
-  flex-direction: row; /* side‑by‑side */
+  flex-direction: row; 
 }
 
 .explainText {
@@ -152,17 +152,167 @@ body {
 /* ----- Together section: two images side by side ----- */
 .togetherImages {
   display: flex;
-  gap: 2rem;
-  align-self: center; /* vertically center the image pair */
+  gap: 1rem;
+  align-self: flex-end; /* vertically center the image pair */
 }
 .togetherImg {
-  width: 200px;
+  width: 480px;
   height: auto;
   filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.15));
+  margin-right: -190px;
 }
 
 /* Hide old unused classes */
 .allIcons,
 .miniImg {
   display: none;
+}
+
+
+
+
+
+
+
+/* ============================================= */
+/*  RESPONSIVE MEDIA QUERIES – HOME PAGE          */
+/* ============================================= */
+
+/* ---------- Tablet / large phone (≤ 768px) ---------- */
+@media (max-width: 768px) {
+  /* 
+    Hero: only the title and button are shown.
+    The character panels (images + backgrounds) are completely hidden.
+  */
+  .heroSection {
+    height: auto;
+    min-height: 50vh;
+    flex-direction: column;
+    justify-content: center;
+    padding: 2rem 1rem;
+    gap: 1rem;
+  }
+
+  .heroSidePanel {
+    display: none;                /* remove cannibal/missionary images + backgrounds */
+  }
+
+  .heroCenter {
+    width: 100%;
+    background: none;
+    padding: 0;
+  }
+
+  .heroTitle {
+    font-size: 2.2rem;
+    margin-bottom: 1.2rem;
+  }
+
+  .startButton {
+    font-size: 1rem;
+    padding: 0.4rem 1.8rem;
+  }
+
+  /* Explanation sections – stack vertically, pictures at the bottom */
+  .explanationSection {
+    flex-direction: column;
+    padding: 2rem 1rem 0;
+    gap: 2rem;
+    min-height: auto;
+  }
+
+  .missionaryExplain,
+  .cannibalExplain,
+  .togetherExplain {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .explainText {
+    margin-bottom: 1rem;
+  }
+
+  .explainText h3 {
+    font-size: 1.5rem;
+  }
+  .explainText p {
+    font-size: 0.95rem;
+  }
+
+  /* Single images – smaller, placed at the bottom */
+  .explainImg {
+    width: 220px;
+    align-self: center;
+    margin-bottom: 2rem;
+  }
+
+  /* Override the left‑side order – no longer needed */
+  .missionaryExplain .explainImg {
+    order: unset;
+  }
+
+  /* Together section – two images side by side, also at the bottom */
+  .togetherImages {
+    order: unset;
+    align-self: center;
+    margin-bottom: 2rem;
+    gap: 0.5rem;
+  }
+
+  .togetherImg {
+    width: 150px;
+    margin-right: 0;
+  }
+}
+
+/* ---------- Phone (≤ 480px) ---------- */
+@media (max-width: 480px) {
+  .heroSection {
+    min-height: 40vh;
+    padding: 1.5rem 0.8rem;
+  }
+
+  .heroTitle {
+    font-size: 1.8rem;
+  }
+
+  .startButton {
+    font-size: 0.9rem;
+    padding: 0.3rem 1.5rem;
+  }
+
+  .explanationSection {
+    padding: 1.5rem 0.8rem 0;
+    gap: 1.5rem;
+  }
+
+  .explainText h3 {
+    font-size: 1.3rem;
+  }
+  .explainText p {
+    font-size: 0.85rem;
+  }
+
+  .explainImg {
+    width: 160px;
+  }
+
+  .togetherImg {
+    width: 120px;
+  }
+}
+
+/* ---------- Very small devices (≤ 380px) ---------- */
+@media (max-width: 380px) {
+  .heroTitle {
+    font-size: 1.5rem;
+  }
+
+  .explainImg {
+    width: 130px;
+  }
+
+  .togetherImg {
+    width: 100px;
+  }
 }

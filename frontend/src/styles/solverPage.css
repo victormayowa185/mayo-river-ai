@@ -117,6 +117,34 @@
   color: #555;
 }
 
+
+/* Redo button (appears after the solution is finished) */
+.redoButton {
+  background: #e67e22;
+  color: white;
+  font-weight: 600;
+  gap: 0.4rem;
+  padding: 0.5rem 1rem;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, transform 0.1s;
+  min-width: 42px;
+  min-height: 42px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+.redoButton:hover {
+  background: #d35400;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+}
+
+.redoButton:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
 /* ---------- Scene ---------- */
 .solverScene {
   flex: 1;
@@ -138,7 +166,7 @@
 
 .riverStrip {
   position: absolute;
-  bottom: 20%;
+  bottom: 17%;
   left: 37.5%;
   right: 37.5%;
   height: 60px;
@@ -168,7 +196,7 @@
 /* Boat inside river */
 .solverBoat {
   position: absolute;
-  bottom: 5px;
+  bottom: 30px;
   width: 80px;
   height: auto;
 }
@@ -273,6 +301,80 @@
 /*  RESPONSIVE MEDIA QUERIES                     */
 /* ============================================= */
 
+
+/* ---------- Medium screens (≤ 1132px) – 2‑by‑3 grid ---------- */
+@media (max-width: 1132px) {
+  .solverTitle {
+    font-size: 1.1rem;
+  }
+
+  .algoSelect {
+    height: 38px;
+    font-size: 0.85rem;
+    max-width: 110px;
+  }
+
+  .iconButton {
+    min-width: 38px;
+    min-height: 38px;
+    padding: 0.5rem;
+    font-size: 0.9rem;
+  }
+
+  .solveButton {
+    padding: 0.45rem 1rem;
+    font-size: 0.9rem;
+  }
+
+  .grassStrip {
+    height: 28%;
+  }
+
+  .riverStrip {
+    bottom: 20%;
+    left: 32%;
+    right: 32%;
+    height: 55px;
+  }
+
+  .solverBoat {
+    width: 70px;
+  }
+
+  /* Bank positions – give enough room for 2 columns */
+  .leftBank {
+    left: 2% !important;
+  }
+  .rightBank {
+    left: 68% !important;
+  }
+
+  /* 2‑by‑3 grid – absolute guarantee */
+  .bank {
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    width: 300px;                   /* exactly fits two 60px icons + 10px gap */
+    gap: 10px !important;           /* clean spacing between icons */
+    align-items: center !important;
+    justify-content: center !important;
+    bottom: 8% !important;
+  }
+
+  .characterIcon {
+    height: 60px;
+    width: 100px;                    /* fixed size – two per row like a pro */
+    margin-right: -43px !important;           /* no desktop overlap */
+  }
+
+
+  .cloud1 { top: 10%; left: 10%; font-size: 3.5rem; }
+  .cloud2 { top: 7%;  left: 50%; font-size: 3rem;   }
+  .cloud3 { top: 16%; left: 65%; font-size: 4.5rem; }
+  .cloud4 { top: 13%; left: 30%; font-size: 2.5rem; }
+}
+
+
+
 /* ---------- Tablet / large phone (≤ 768px) ---------- */
 @media (max-width: 768px) {
   .solverBar {
@@ -361,15 +463,14 @@
     left: 3% !important;
   }
   .rightBank {
-    left: 70% !important;
+    left: 67% !important;
   }
 
   /* Icons: 2‑per‑row grid */
   .bank {
     flex-direction: row !important;
     flex-wrap: wrap !important;
-    width: 130px;                  /* exactly 2 icons + gap */
-    gap: 8px !important;
+    width: 250px;                  /* exactly 2 icons + gap */
     align-items: center !important;
     justify-content: center !important;
     bottom: 8% !important;        /* pushed down */
@@ -377,15 +478,11 @@
 
   .characterIcon {
     height: 60px;
-    width: 60px;                  /* fixed size for grid */
-    margin: 0 !important;         /* remove desktop overlapping margin */
+    width: 100px;                  /* fixed size for grid */
+    margin-right: -23px !important;   
+    
   }
 
-  .sun {
-    top: 2%;
-    left: 75%;
-    font-size: 5rem;
-  }
 
   .cloud1 { top: 10%; left: 10%; font-size: 3rem;   }
   .cloud2 { top: 8%;  left: 50%; font-size: 2.5rem; }
@@ -442,28 +539,21 @@
   }
 
   .leftBank {
-    left: 2% !important;
+    left: -10% !important;
   }
   .rightBank {
     left: 72% !important;
   }
 
   .bank {
-    width: 110px;                 /* slightly smaller for tighter fit */
-    gap: 6px !important;
-    bottom: 10% !important;
+    width: 210px;                 /* slightly smaller for tighter fit */
+    bottom: 7% !important;
   }
 
   .characterIcon {
-    height: 50px;
-    width: 50px;
-    margin: 0 !important;
-  }
-
-  .sun {
-    font-size: 4rem;
-    top: 2%;
-    left: 70%;
+    height: 70px;
+    width: 100px;
+    margin-right: -25px !important; 
   }
 
   .cloud1 { font-size: 2.5rem; }
@@ -512,22 +602,21 @@
   }
 
   .leftBank {
-    left: 1% !important;
+    left: -13% !important;
   }
   .rightBank {
-    left: 60% !important;
+    left: 53% !important;
   }
 
   .bank {
-    width: 100px;
-    gap: 1px !important;
+    width: 200px;
     bottom: 10% !important;
   }
 
   .characterIcon {
-    height: 45px;
-    width: 45px;
-    margin: 0 !important;
+    height: 55px;
+    width: 90px;
+    margin-right: -23px !important; 
   }
 
 

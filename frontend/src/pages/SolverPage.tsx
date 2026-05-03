@@ -15,7 +15,7 @@ import {
   FaStepForward,
   FaRedoAlt,
   FaCheck,
-  FaCloud, // <-- cloud icon
+  FaCloud,
 } from "react-icons/fa";
 import canoeImg from "../assets/canoe.png";
 import missionaryImg from "../assets/miss.png";
@@ -34,6 +34,7 @@ const SolverPage = () => {
 
   // Fetch solution from live API
   const handleSolve = async () => {
+    setSolution(null); // ← instantly reset the button to "Solve"
     try {
       const response = await fetch("https://mayosearch.onrender.com/solve", {
         method: "POST",
@@ -182,15 +183,19 @@ const SolverPage = () => {
     }
     if (characters.length === 0) return null;
 
-   return (
-     <div
-       className={`bank ${side === "left" ? "leftBank" : "rightBank"}`}
-       key={`bank-${side}`}
-     >
-       {characters}
-     </div>
-   );
+    return (
+      <div
+        className={`bank ${side === "left" ? "leftBank" : "rightBank"}`}
+        key={`bank-${side}`}
+      >
+        {characters}
+      </div>
+    );
   };
+
+  // Condition for showing "Solved" state (only when finished)
+  const isFinished =
+    solution && !playing && currentStep === solution.length - 1;
 
   return (
     <div className="solverPage">
@@ -209,14 +214,21 @@ const SolverPage = () => {
         </div>
         <div className="barRight">
           <div className="controls">
-
+            {/* Solve / Solved button – resets properly */}
             <button
-              className={`iconButton solveButton ${solution ? "solved" : ""}`}
+              className={`iconButton solveButton ${isFinished ? "solved" : ""}`}
               onClick={handleSolve}
             >
-              {solution ? <FaCheck /> : <FaRedoAlt />}
-              {solution ? " Solved" : " Solve"}
+              {isFinished ? <FaCheck /> : <FaRedoAlt />}
+              {isFinished ? " Solved" : " Solve"}
             </button>
+
+            {/* Redo button – only appears after finishing */}
+            {isFinished && (
+              <button className="iconButton redoButton" onClick={handleSolve}>
+                <FaRedoAlt /> Redo
+              </button>
+            )}
 
             <button
               className="iconButton"
