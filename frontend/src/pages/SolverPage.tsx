@@ -16,6 +16,7 @@ import {
   FaRedoAlt,
   FaCheck,
   FaCloud,
+  FaSpinner, // new spinner icon
 } from "react-icons/fa";
 import canoeImg from "../assets/canoe.png";
 import missionaryImg from "../assets/miss.png";
@@ -27,15 +28,27 @@ const SolverPage = () => {
   const [algorithm, setAlgorithm] = useState("bfs");
   const [solution, setSolution] = useState(null);
   const [currentStep, setCurrentStep] = useState(0);
-  const [displayedStep, setDisplayedStep] = useState(0); // NEW: syncs with boat
+  const [displayedStep, setDisplayedStep] = useState(0);
   const [playing, setPlaying] = useState(false);
+  const [loading, setLoading] = useState(false); // for API call feedback
   const timerRef = useRef(null);
   const boatRef = useRef(null);
   const initializedRef = useRef(false);
 
-  // Fetch solution from live API
+  // ---------- Wake up Render API as soon as page loads ----------
+  useEffect(() => {
+    // Ping the home route to start waking the free instance
+    fetch("https://mayosearch.onrender.com/")
+      .then(() => console.log("Backend is awake"))
+      .catch(() =>
+        console.warn("Backend ping failed, but it might still wake."),
+      );
+  }, []);
+
+  // ---------- Solve handler (with loading state) ----------
   const handleSolve = async () => {
-    setSolution(null); // instantly reset the button to "Solve"
+    setSolution(null); // reset button
+    setLoading(true); // show spinner
     try {
       const response = await fetch("https://mayosearch.onrender.com/solve", {
         method: "POST",
@@ -46,8 +59,8 @@ const SolverPage = () => {
       if (data.solution) {
         setSolution(data.solution);
         setCurrentStep(0);
-        setDisplayedStep(0); // reset displayed step
-        setPlaying(false); // do NOT auto‑play
+        setDisplayedStep(0);
+        setPlaying(false);
         initializedRef.current = false;
       } else {
         alert("No solution returned");
@@ -55,13 +68,14 @@ const SolverPage = () => {
     } catch (error) {
       alert("API call failed – check console");
       console.error(error);
+    } finally {
+      setLoading(false); // stop spinner
     }
   };
 
   // ----- Bounce animation when solution is ready -----
   useEffect(() => {
     if (!solution) return;
-
     const timer = setTimeout(() => {
       const icons = document.querySelectorAll(".characterIcon");
       gsap.fromTo(
@@ -78,7 +92,6 @@ const SolverPage = () => {
         },
       );
     }, 100);
-
     return () => clearTimeout(timer);
   }, [solution]);
 
@@ -92,10 +105,10 @@ const SolverPage = () => {
     });
   }, [solution]);
 
-  // Auto‑play timer – slower step interval (2.5s)
+  // Auto‑play timer (2.5s)
   useEffect(() => {
     if (playing && solution) {
-      timerRef.current = setInterval(advanceStep, 2500); // was 1500
+      timerRef.current = setInterval(advanceStep, 2500);
     } else {
       clearInterval(timerRef.current);
     }
@@ -109,47 +122,38 @@ const SolverPage = () => {
 
   const stepForward = () => {
     if (!solution) return;
-    if (currentStep < solution.length - 1) {
-      setCurrentStep((prev) => prev + 1);
-    }
+    if (currentStep < solution.length - 1) setCurrentStep((prev) => prev + 1);
   };
 
   const stepBack = () => {
     if (currentStep > 0) setCurrentStep((prev) => prev - 1);
   };
 
-  // Use displayedStep to get the actual visual state (syncs with boat)
+  // Current visual state from displayedStep (boat‑synced)
   const currentState = solution?.[displayedStep] || {
     left_missionaries: 3,
     left_cannibals: 3,
     boat: "left",
   };
 
-  // Boat animation (sailing) – now synced with displayedStep
   useLayoutEffect(() => {
     if (!solution || !boatRef.current) return;
     const targetLeft = currentState.boat === "left" ? "5%" : "85%";
     const tween = gsap.to(boatRef.current, {
       left: targetLeft,
-      duration: 2, // slower sailing (was 1)
+      duration: 2,
       ease: "power2.inOut",
-      onComplete: () => {
-        // Only update the displayed characters after the boat arrives
-        setDisplayedStep(currentStep);
-      },
+      onComplete: () => setDisplayedStep(currentStep),
     });
-
     if (!initializedRef.current) {
       gsap.set(boatRef.current, { left: targetLeft });
       initializedRef.current = true;
-      setDisplayedStep(0); // ensure initial state is shown immediately
-      tween.kill(); // prevent the first tween from firing
+      setDisplayedStep(0);
+      tween.kill();
     }
-
     return () => tween.kill();
-  }, [solution, currentStep]); // runs whenever currentStep changes
+  }, [solution, currentStep]);
 
-  // Idle bobbing
   useLayoutEffect(() => {
     if (!boatRef.current) return;
     gsap.to(boatRef.current, {
@@ -170,7 +174,6 @@ const SolverPage = () => {
       side === "left"
         ? currentState.left_cannibals
         : 3 - currentState.left_cannibals;
-
     const characters = [];
     for (let i = 0; i < totalM; i++) {
       characters.push(
@@ -193,7 +196,6 @@ const SolverPage = () => {
       );
     }
     if (characters.length === 0) return null;
-
     return (
       <div
         className={`bank ${side === "left" ? "leftBank" : "rightBank"}`}
@@ -204,14 +206,12 @@ const SolverPage = () => {
     );
   };
 
-  // Condition for showing "Solved" state (only when finished)
   const isFinished =
     solution && !playing && currentStep === solution.length - 1;
 
   return (
     <div className="solverPage">
       <Navbar />
-
       <header className="solverBar">
         <div className="barLeft">
           <h2 className="solverTitle">Missionaries & Cannibals · Solver</h2>
@@ -225,18 +225,28 @@ const SolverPage = () => {
         </div>
         <div className="barRight">
           <div className="controls">
-            {/* Solve / Solved button – resets properly */}
+            {/* Solve / Solved / Loading button */}
             <button
               className={`iconButton solveButton ${isFinished ? "solved" : ""}`}
               onClick={handleSolve}
+              disabled={loading}
             >
-              {isFinished ? <FaCheck /> : <FaRedoAlt />}
-              {isFinished ? " Solved" : " Solve"}
+              {loading ? (
+                <FaSpinner className="spin" />
+              ) : isFinished ? (
+                <FaCheck />
+              ) : (
+                <FaRedoAlt />
+              )}
+              {loading ? " Waking…" : isFinished ? " Solved" : " Solve"}
             </button>
 
-            {/* Redo button – only appears after finishing */}
             {isFinished && (
-              <button className="iconButton redoButton" onClick={handleSolve}>
+              <button
+                className="iconButton redoButton"
+                onClick={handleSolve}
+                disabled={loading}
+              >
                 <FaRedoAlt /> Redo
               </button>
             )}
@@ -248,7 +258,6 @@ const SolverPage = () => {
             >
               {playing ? <FaPause /> : <FaPlay />}
             </button>
-
             <button
               className="iconButton"
               onClick={stepBack}
@@ -256,7 +265,6 @@ const SolverPage = () => {
             >
               <FaStepBackward />
             </button>
-
             <button
               className="iconButton"
               onClick={stepForward}
@@ -280,8 +288,6 @@ const SolverPage = () => {
         </div>
         {renderBank("left")}
         {renderBank("right")}
-
-        {/* ---- Sky decorations ---- */}
         <FaCloud className="cloud cloud1" />
         <FaCloud className="cloud cloud2" />
         <FaCloud className="cloud cloud3" />
