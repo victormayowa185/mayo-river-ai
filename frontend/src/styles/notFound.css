@@ -49,7 +49,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  background-color: #8647f0;
+  background-color: #2d5a27;
   color: #ffffff;
   padding: 0.7rem 1.8rem;               /* smaller button */
   font-weight: 600;
@@ -57,7 +57,7 @@
   text-decoration: none;
   border-radius: 50px;
   transition: background-color 0.3s ease, transform 0.2s ease;
-  box-shadow: 0 4px 14px rgba(134, 71, 240, 0.25);
+  box-shadow: 0 4px 14px rgba(45, 90, 39, 0.25);
 }
 
 .not-found-link:hover {
