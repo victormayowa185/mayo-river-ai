@@ -174,10 +174,6 @@ const HomePage = () => {
         ref={togetherSection}
         className="explanationSection togetherExplain"
       >
-        <div className="togetherImages">
-          <img className="togetherImg" src={missionaryImg} alt="" />
-          <img className="togetherImg" src={cannibalImg} alt="" />
-        </div>
         <div className="explainText">
           <h3>The Crossing</h3>
           <p>
@@ -185,6 +181,10 @@ const HomePage = () => {
             without a single misstep. It’s a classic puzzle of logic, patience,
             and balance.
           </p>
+        </div>
+        <div className="togetherImages">
+          <img className="togetherImg" src={missionaryImg} alt="" />
+          <img className="togetherImg" src={cannibalImg} alt="" />
         </div>
       </section>
     </>

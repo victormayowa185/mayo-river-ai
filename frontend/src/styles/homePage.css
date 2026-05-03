@@ -180,10 +180,6 @@ body {
 
 /* ---------- Tablet / large phone (≤ 768px) ---------- */
 @media (max-width: 768px) {
-  /* 
-    Hero: only the title and button are shown.
-    The character panels (images + backgrounds) are completely hidden.
-  */
   .heroSection {
     height: auto;
     min-height: 50vh;
@@ -194,7 +190,7 @@ body {
   }
 
   .heroSidePanel {
-    display: none;                /* remove cannibal/missionary images + backgrounds */
+    display: none;
   }
 
   .heroCenter {
@@ -213,7 +209,6 @@ body {
     padding: 0.4rem 1.8rem;
   }
 
-  /* Explanation sections – stack vertically, pictures at the bottom */
   .explanationSection {
     flex-direction: column;
     padding: 2rem 1rem 0;
@@ -239,23 +234,22 @@ body {
     font-size: 0.95rem;
   }
 
-  /* Single images – smaller, placed at the bottom */
   .explainImg {
     width: 220px;
     align-self: center;
-    margin-bottom: 2rem;
+    margin-top: auto;
+    margin-bottom: 0;
   }
 
-  /* Override the left‑side order – no longer needed */
   .missionaryExplain .explainImg {
     order: unset;
   }
 
-  /* Together section – two images side by side, also at the bottom */
   .togetherImages {
     order: unset;
     align-self: center;
-    margin-bottom: 2rem;
+    margin-top: auto;
+    margin-bottom: 0;
     gap: 0.5rem;
   }
 
@@ -295,6 +289,13 @@ body {
 
   .explainImg {
     width: 160px;
+    margin-top: auto;
+    margin-bottom: 0;
+  }
+
+  .togetherImages {
+    margin-top: auto;
+    margin-bottom: 0;
   }
 
   .togetherImg {
@@ -310,6 +311,13 @@ body {
 
   .explainImg {
     width: 130px;
+    margin-top: auto;
+    margin-bottom: 0;
+  }
+
+  .togetherImages {
+    margin-top: auto;
+    margin-bottom: 0;
   }
 
   .togetherImg {
