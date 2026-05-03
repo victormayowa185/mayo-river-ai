@@ -20,11 +20,11 @@
 }
 
 .navbar-logo:hover {
-  color: #8647f0;
+  color: #2d5a27;
 }
 
 .logo-dot {
-  color: #8647f0;
+  color: #2d5a27;
 }
 
 /* Desktop – inline menu */
@@ -45,7 +45,7 @@
 }
 
 .navbar-icon:hover {
-  color: #8647f0;
+  color: #2d5a27;
 }
 
 /* Hamburger – hidden on desktop */
@@ -61,7 +61,7 @@
 }
 
 .navbar-toggle:hover {
-  color: #8647f0;
+  color: #2d5a27;
 }
 
 .theme-toggle {
@@ -249,7 +249,7 @@
 
   .navbar-toggle:active,
   .navbar-icon:active {
-    color: #8647f0;
+    color: #2d5a27;
   }
 }
 

@@ -2,7 +2,9 @@ import { useLayoutEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import Navbar from "../components/Navbar"; // adjust the path to your Navbar
+import Navbar from "../components/Navbar";
+import missionaryImg from "../assets/mission.png";
+import cannibalImg from "../assets/cannibal.png";
 import "../styles/homePage.css";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -10,222 +12,178 @@ gsap.registerPlugin(ScrollTrigger);
 const HomePage = () => {
   const navigate = useNavigate();
 
-  // Refs for the entrance animation sequence
-  const boatRef = useRef(null);
-  const missionary1 = useRef(null); // front centre
-  const missionary2 = useRef(null); // rear left
-  const missionary3 = useRef(null); // rear right
-  const cannibal1 = useRef(null);
-  const cannibal2 = useRef(null);
-  const cannibal3 = useRef(null);
-  const missionariesGroup = useRef(null);
-  const cannibalsGroup = useRef(null);
+  const houseBgRef = useRef(null);
+  const treeBgRef = useRef(null);
 
-  // Refs for scroll sections (bounce in)
   const missionarySection = useRef(null);
   const cannibalSection = useRef(null);
   const togetherSection = useRef(null);
 
   useLayoutEffect(() => {
-    // ------ Hero entrance timeline ------
-    const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
-
-    // Boat: already visible, start slow drift immediately
-    gsap.to(boatRef.current, {
-      x: "+=250", // move right by 250px (adjust to river width)
-      duration: 8,
-      repeat: -1,
-      yoyo: false,
-      onRepeat: () => {
-        gsap.set(boatRef.current, { x: -50 }); // reset to left before next loop
-        gsap.to(boatRef.current, { x: "+=250", duration: 8 });
-      },
-    });
-
-    // Missionaries pop-in (stagger from bottom)
-    tl.from([missionary1.current, missionary2.current, missionary3.current], {
-      y: 60,
+    // Hero background pop-up
+    gsap.set([houseBgRef.current, treeBgRef.current], {
+      translateY: 100,
       opacity: 0,
-      scale: 0.5,
-      duration: 0.6,
-      stagger: 0.2,
-      ease: "back.out(1.7)",
-    })
-      // Cannibals pop-in (stagger from bottom)
-      .from(
-        [cannibal1.current, cannibal2.current, cannibal3.current],
-        {
-          y: 60,
-          opacity: 0,
-          scale: 0.5,
-          duration: 0.6,
-          stagger: 0.2,
-          ease: "back.out(1.7)",
-        },
-        "-=0.4",
-      ) // start slightly before missionaries finish
-
-      // Swipe animations (missionaries first, then cannibals after a delay)
-      .to(missionariesGroup.current, {
-        x: 200,
-        opacity: 0,
-        duration: 0.8,
-        delay: 1.5,
-      })
-      .fromTo(
-        missionariesGroup.current,
-        { x: -200, opacity: 0 },
-        {
-          x: 0,
-          opacity: 1,
-          duration: 0.8,
-        },
-      )
-
-      .to(
-        cannibalsGroup.current,
-        {
-          x: -200,
-          opacity: 0,
-          duration: 0.8,
-        },
-        "+=0.3",
-      )
-      .fromTo(
-        cannibalsGroup.current,
-        { x: 200, opacity: 0 },
-        {
-          x: 0,
-          opacity: 1,
-          duration: 0.8,
-        },
-      );
-
-    // ------ Scroll-triggered bounce-ins ------
-    [
-      missionarySection.current,
-      cannibalSection.current,
-      togetherSection.current,
-    ].forEach((section) => {
-      gsap.from(section, {
-        scrollTrigger: {
-          trigger: section,
-          start: "top 85%",
-        },
-        y: 50,
-        opacity: 0,
-        duration: 0.8,
-        ease: "back.out(1.4)",
-      });
     });
+
+    const heroTl = gsap
+      .timeline({ defaults: { ease: "back.out(1.7)" } })
+      .to([houseBgRef.current, treeBgRef.current], {
+        translateY: 0,
+        opacity: 1,
+        duration: 1,
+        stagger: 0.15,
+      })
+      .add(() => {
+        [houseBgRef.current, treeBgRef.current].forEach((bg) => {
+          const loop = gsap.timeline({ repeat: -1, repeatDelay: 4 });
+          loop
+            .to(bg, {
+              backgroundPosition: "200px 50%",
+              duration: 2,
+              ease: "power2.inOut",
+            })
+            .set(bg, { backgroundPosition: "-200px 50%" })
+            .to(bg, {
+              backgroundPosition: "0px 50%",
+              duration: 2,
+              ease: "power2.inOut",
+            });
+        });
+      }, "+=5");
+
+    // ========== SCROLL ANIMATIONS (GSAP ONLY) ==========
+    const animateSection = (sectionRef, imageSelector, textSelector) => {
+      const section = sectionRef.current;
+      if (!section) return;
+
+      const images = section.querySelectorAll(imageSelector);
+      const textEl = section.querySelector(textSelector);
+      if (!images.length || !textEl) return;
+
+      // Set initial hidden state
+      gsap.set(images, { opacity: 0, scale: 0, y: 40 });
+      gsap.set(textEl, { opacity: 0, y: 30 });
+
+      // Create the scroll-triggered reveal
+      gsap
+        .timeline({
+          scrollTrigger: {
+            trigger: section,
+            start: "top 80%",
+            // markers: true,  // uncomment to debug triggers
+          },
+        })
+        .to(images, {
+          opacity: 1,
+          scale: 1,
+          y: 0,
+          duration: 0.8,
+          ease: "back.out(1.7)",
+          stagger: 0.1, // slight stagger if multiple images
+        })
+        .to(
+          textEl,
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.8,
+            ease: "power2.out",
+          },
+          "-=0.4", // overlap so they complete together
+        );
+    };
+
+    animateSection(missionarySection, ".explainImg", ".explainText");
+    animateSection(cannibalSection, ".explainImg", ".explainText");
+    // Together section: multiple images
+    animateSection(togetherSection, ".togetherImg", ".explainText");
+
+    // Refresh triggers after layout (important for images / dynamic heights)
+    const refresh = () => ScrollTrigger.refresh();
+    window.addEventListener("load", refresh);
+    const timer = setTimeout(refresh, 300);
+
+    return () => {
+      heroTl.kill();
+      ScrollTrigger.getAll().forEach((t) => t.kill());
+      window.removeEventListener("load", refresh);
+      clearTimeout(timer);
+    };
   }, []);
 
   return (
     <>
       <Navbar />
 
-      {/* Hero Text Section */}
       <section className="heroSection">
-        <h1 className="heroTitle">Missionaries and the Cannibals</h1>
-        <button className="startButton" onClick={() => navigate("/solver")}>
-          Start
-        </button>
-      </section>
-
-      {/* River Diorama */}
-      <section className="riverScene">
-        <div className="riverWater"></div>
-
-        {/* Left side: Missionaries */}
-        <div className="missionaryWorld">
-          <div ref={missionariesGroup} className="charGroup">
-            <div
-              ref={missionary2}
-              className="charIcon missionaryIcon rearLeft"
-            ></div>
-            <div
-              ref={missionary1}
-              className="charIcon missionaryIcon frontCenter"
-            ></div>
-            <div
-              ref={missionary3}
-              className="charIcon missionaryIcon rearRight"
-            ></div>
-          </div>
+        <div className="heroSidePanel">
+          <div ref={houseBgRef} className="animatedBg houseBg" />
+          <img className="heroCharImg" src={missionaryImg} alt="" />
         </div>
-
-        {/* Boat */}
-        <div ref={boatRef} className="boatCanoe"></div>
-
-        {/* Right side: Cannibals */}
-        <div className="cannibalWorld">
-          <div ref={cannibalsGroup} className="charGroup">
-            <div
-              ref={cannibal2}
-              className="charIcon cannibalIcon rearLeft"
-            ></div>
-            <div
-              ref={cannibal1}
-              className="charIcon cannibalIcon frontCenter"
-            ></div>
-            <div
-              ref={cannibal3}
-              className="charIcon cannibalIcon rearRight"
-            ></div>
-          </div>
+        <div className="heroCenter">
+          <h1 className="heroTitle">Missionaries and the Cannibals</h1>
+          <button className="startButton" onClick={() => navigate("/solver")}>
+            Start
+          </button>
+        </div>
+        <div className="heroSidePanel">
+          <div ref={treeBgRef} className="animatedBg treeBg" />
+          <img
+            className="heroCharImg heroCharImgLarge"
+            src={cannibalImg}
+            alt=""
+          />
         </div>
       </section>
 
-      {/* Explanation Sections */}
+      {/* Missionaries */}
       <section
         ref={missionarySection}
         className="explanationSection missionaryExplain"
       >
-        <div className="explainIcon missionaryLargeIcon"></div>
         <div className="explainText">
-          <h3>The bookworms</h3>
+          <h3>The Missionaries</h3>
           <p>
-            These peaceful souls carry pens, books, and a gentle faith. But if
-            the cannibals outnumber them on either shore… the story gets messy.
-            They need a clever plan to cross safely.
+            Three peaceful travellers need to cross the river. But if cannibals
+            outnumber them on either bank, they’re in danger. A careful plan is
+            the only way to safety.
           </p>
         </div>
+        <img className="explainImg" src={missionaryImg} alt="" />
       </section>
 
+      {/* Cannibals */}
       <section
         ref={cannibalSection}
         className="explanationSection cannibalExplain"
       >
         <div className="explainText">
-          <h3>The wild ones</h3>
+          <h3>The Cannibals</h3>
           <p>
-            Don’t be fooled by the horns – they’re hungry, not evil. They also
-            have every right to cross the river. The puzzle isn’t about
-            fighting; it’s about finding a safe way for everyone to reach the
-            other side.
+            No less determined to cross, the cannibals are hungry and wild — but
+            not mindless. They follow the same rules and share the same goal:
+            reach the other side.
           </p>
         </div>
-        <div className="explainIcon cannibalLargeIcon"></div>
+        <img className="explainImg" src={cannibalImg} alt="" />
       </section>
 
+      {/* Together */}
       <section
         ref={togetherSection}
         className="explanationSection togetherExplain"
       >
-        <div className="allIcons">
-          <div className="miniIcon missionaryMini"></div>
-          <div className="miniIcon cannibalMini"></div>
-          <div className="miniIcon missionaryMini"></div>
-          <div className="miniIcon cannibalMini"></div>
-          <div className="miniIcon missionaryMini"></div>
-          <div className="miniIcon cannibalMini"></div>
+        <div className="togetherImages">
+          <img className="togetherImg" src={missionaryImg} alt="" />
+          <img className="togetherImg" src={cannibalImg} alt="" />
         </div>
         <div className="explainText">
-          <h3>The great crossing</h3>
+          <h3>The Crossing</h3>
           <p>
-            Six travellers, one tiny canoe. The goal? Get every single person to
-            the far bank without anyone becoming lunch. It’s a classic test of
-            patience, logic, and a little bit of trust.
+            One small boat, six passengers. The challenge: move everyone across
+            without a single misstep. It’s a classic puzzle of logic, patience,
+            and balance.
           </p>
         </div>
       </section>

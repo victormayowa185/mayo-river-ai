@@ -1,0 +1,538 @@
+.solverPage {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: white;
+}
+
+/* ---------- Top Bar ---------- */
+.solverBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.8rem 2rem;
+  background: #ffffff;
+  border-bottom: 1px solid #e0e0e0;
+  gap: 1rem;
+  z-index: 10;
+}
+
+.barLeft {
+  flex: 0 0 auto;
+}
+
+.barCenter {
+  flex: 1 1 auto;
+  display: flex;
+  justify-content: center;
+}
+
+.barRight {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+}
+
+.solverTitle {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+/* ---------- Controls (new icon‑based style) ---------- */
+.controls {
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+}
+
+.algoSelect {
+  padding: 0.5rem 0.6rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 0.9rem;
+  height: 42px;               /* match button height */
+  background: white;
+}
+
+.iconButton {
+  background: #2e6d25ad;          /* keep your semi‑transparent green */
+  color: white;
+  border: none;
+  padding: 0.6rem;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;       /* smoother transition */
+  min-width: 42px;
+  min-height: 42px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+.iconButton:hover {
+  background: #2d5a27;             /* solid deep green on hover */
+  transform: translateY(-2px);     /* lift effect */
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+}
+.iconButton:active {
+  transform: translateY(0);        /* press effect */
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+.iconButton:disabled {
+  background: #bbb;
+  color: #eee;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* “Solve” button with text */
+.solveButton {
+  gap: 0.4rem;
+  padding: 0.5rem 1.2rem;
+  font-size: 0.95rem;
+  font-weight: 600;                /* bolder text */
+  letter-spacing: 0.3px;
+}
+
+.solveButton.solved {
+  background: #2d5a27 !important;  /* solid green to distinguish */
+  color: white;
+  cursor: default;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.solveButton.solved:hover {
+  background: #2d5a27 !important;  /* no change on hover */
+  transform: none;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.stepCounter {
+  font-size: 0.9rem;
+  color: #555;
+}
+
+/* ---------- Scene ---------- */
+.solverScene {
+  flex: 1;
+  position: relative;
+  background: white;
+  overflow: hidden;
+}
+
+/* Green grass strip – bottom 30% */
+.grassStrip {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 30%;
+  background: #2d5a27;
+  border-top: 3px solid #2d5a27;
+}
+
+.riverStrip {
+  position: absolute;
+  bottom: 20%;
+  left: 37.5%;
+  right: 37.5%;
+  height: 60px;
+  background: linear-gradient(180deg, #1e90ff, #00bfff);
+  border-radius: 8px;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+  overflow: hidden;
+}
+
+.riverStrip::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 200%;
+  height: 20px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 20' preserveAspectRatio='none'%3E%3Cpath d='M0,10 C150,20 350,0 600,10 C850,20 1050,0 1200,10 L1200,20 L0,20 Z' fill='%231e90ff'/%3E%3C/svg%3E") repeat-x;
+  background-size: 600px 20px;
+  animation: flow 4s linear infinite;
+}
+
+@keyframes flow {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+/* Boat inside river */
+.solverBoat {
+  position: absolute;
+  bottom: 5px;
+  width: 80px;
+  height: auto;
+}
+
+/* Bank containers – absolute positioning, but content is flex */
+.bank {
+  position: absolute;
+  bottom: 25%;
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-end;
+  gap: 0 !important;
+}
+
+.leftBank {
+  left: 1%;
+}
+
+.rightBank {
+  left: 65%;
+}
+
+/* Character icons inside the banks – simple, flexible size */
+.characterIcon {
+  height: 100px;
+  width: auto;
+  pointer-events: none;
+  margin-right: -130px !important;
+}
+
+
+/* ------------------------------------------- */
+/*  Clouds – visible on white, drifting left‑right */
+/* ------------------------------------------- */
+.cloud {
+  position: absolute;
+  color: #87CEEB;                  /* soft sky blue, clearly visible */
+  filter: drop-shadow(0 2px 6px rgba(0,0,0,0.08));
+  user-select: none;
+  z-index: 0;
+  /* Drift animation – different durations set per cloud */
+  animation-name: drift;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+}
+
+.cloud1 {
+  top: 8%;
+  left: 15%;
+  font-size: 4rem;
+  animation-duration: 6s;
+}
+
+.cloud2 {
+  top: 5%;
+  left: 55%;
+  font-size: 3.5rem;
+  animation-duration: 8s;
+}
+
+.cloud3 {
+  top: 15%;
+  left: 70%;
+  font-size: 5rem;
+  animation-duration: 10s;
+}
+
+.cloud4 {
+  top: 12%;
+  left: 35%;
+  font-size: 3rem;
+  animation-duration: 7s;
+}
+
+/* Keyframes for horizontal back‑and‑forth movement */
+@keyframes drift {
+  from {
+    transform: translateX(-20px);
+  }
+  to {
+    transform: translateX(20px);
+  }
+}
+
+/* Remove old character layer – no longer needed */
+.charactersLayer {
+  display: none;
+}
+
+
+
+
+
+
+
+
+
+
+
+/* ============================================= */
+/*  RESPONSIVE MEDIA QUERIES                     */
+/* ============================================= */
+
+/* ---------- Tablet / large phone (≤ 768px) ---------- */
+@media (max-width: 768px) {
+  .solverBar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.8rem;
+    padding: 0.6rem 1rem;
+  }
+
+  .barLeft,
+  .barCenter,
+  .barRight {
+    flex: none;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+
+  .barCenter {
+    order: 3;
+  }
+
+  .solverTitle {
+    font-size: 1rem;
+    text-align: center;
+    white-space: normal;
+  }
+
+  .controls {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+
+  .algoSelect,
+  .solveButton {
+    order: 1;
+  }
+
+  .iconButton:not(.solveButton) {
+    order: 2;
+  }
+
+  .algoSelect {
+    height: 36px;
+    font-size: 0.8rem;
+    flex: 1 1 auto;
+    max-width: 120px;
+  }
+
+  .iconButton {
+    min-width: 36px;
+    min-height: 36px;
+    padding: 0.5rem;
+    font-size: 0.85rem;
+  }
+
+  .solveButton {
+    padding: 0.4rem 0.9rem;
+    font-size: 0.85rem;
+    flex: 0 1 auto;
+  }
+
+  .stepCounter {
+    font-size: 0.8rem;
+    text-align: center;
+  }
+
+  .grassStrip {
+    height: 28%;
+  }
+
+  .riverStrip {
+    bottom: 20%;
+    left: 30%;
+    right: 30%;
+    height: 50px;
+  }
+
+  .solverBoat {
+    width: 60px;
+  }
+
+  /* Bank positions – slightly inward */
+  .leftBank {
+    left: 3% !important;
+  }
+  .rightBank {
+    left: 70% !important;
+  }
+
+  /* Icons: 2‑per‑row grid */
+  .bank {
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    width: 130px;                  /* exactly 2 icons + gap */
+    gap: 8px !important;
+    align-items: center !important;
+    justify-content: center !important;
+    bottom: 8% !important;        /* pushed down */
+  }
+
+  .characterIcon {
+    height: 60px;
+    width: 60px;                  /* fixed size for grid */
+    margin: 0 !important;         /* remove desktop overlapping margin */
+  }
+
+  .sun {
+    top: 2%;
+    left: 75%;
+    font-size: 5rem;
+  }
+
+  .cloud1 { top: 10%; left: 10%; font-size: 3rem;   }
+  .cloud2 { top: 8%;  left: 50%; font-size: 2.5rem; }
+  .cloud3 { top: 18%; left: 65%; font-size: 4rem;   }
+  .cloud4 { top: 14%; left: 30%; font-size: 2rem;   }
+}
+
+/* ---------- Phone (≤ 480px) ---------- */
+@media (max-width: 480px) {
+  .solverBar {
+    padding: 0.5rem 0.8rem;
+    gap: 0.5rem;
+  }
+
+  .solverTitle {
+    font-size: 0.9rem;
+  }
+
+  .algoSelect {
+    height: 32px;
+    font-size: 0.75rem;
+    max-width: 100px;
+  }
+
+  .iconButton {
+    min-width: 30px;
+    min-height: 30px;
+    padding: 0.4rem;
+    font-size: 0.75rem;
+  }
+
+  .solveButton {
+    padding: 0.35rem 0.7rem;
+    font-size: 0.75rem;
+  }
+
+  .stepCounter {
+    font-size: 0.75rem;
+  }
+
+  .grassStrip {
+    height: 25%;
+  }
+
+  .riverStrip {
+    bottom: 18%;
+    left: 25%;
+    right: 25%;
+    height: 45px;
+  }
+
+  .solverBoat {
+    width: 50px;
+  }
+
+  .leftBank {
+    left: 2% !important;
+  }
+  .rightBank {
+    left: 72% !important;
+  }
+
+  .bank {
+    width: 110px;                 /* slightly smaller for tighter fit */
+    gap: 6px !important;
+    bottom: 10% !important;
+  }
+
+  .characterIcon {
+    height: 50px;
+    width: 50px;
+    margin: 0 !important;
+  }
+
+  .sun {
+    font-size: 4rem;
+    top: 2%;
+    left: 70%;
+  }
+
+  .cloud1 { font-size: 2.5rem; }
+  .cloud2 { font-size: 2rem; }
+  .cloud3 { font-size: 3rem; }
+  .cloud4 { font-size: 1.8rem; }
+}
+
+/* ---------- Very small devices (≤ 380px) ---------- */
+@media (max-width: 380px) {
+  .solverTitle {
+    font-size: 0.8rem;
+  }
+
+  .algoSelect {
+    height: 28px;
+    font-size: 0.7rem;
+    max-width: 90px;
+  }
+
+  .iconButton {
+    min-width: 28px;
+    min-height: 28px;
+    padding: 0.3rem;
+    font-size: 0.7rem;
+  }
+
+  .solveButton {
+    padding: 0.3rem 0.6rem;
+    font-size: 0.7rem;
+  }
+
+  .grassStrip {
+    height: 35%;
+  }
+
+  .riverStrip {
+    bottom: 27%;
+    left: 35%;
+    right: 35%;
+    height: 40px;
+  }
+
+  .solverBoat {
+    width: 55px;
+  }
+
+  .leftBank {
+    left: 1% !important;
+  }
+  .rightBank {
+    left: 60% !important;
+  }
+
+  .bank {
+    width: 100px;
+    gap: 1px !important;
+    bottom: 10% !important;
+  }
+
+  .characterIcon {
+    height: 45px;
+    width: 45px;
+    margin: 0 !important;
+  }
+
+
+  .cloud1 { font-size: 2rem; }
+  .cloud2 { font-size: 1.7rem; }
+  .cloud3 { font-size: 2.5rem; }
+  .cloud4 { font-size: 1.5rem; }
+}
