@@ -5,25 +5,16 @@ const Footer = () => {
   return (
     <footer className="footer">
       <p>
-        A <span className="brand-mayo">MAYO</span> project by{" "}
+        A <span className="brand-mayo"></span> project by{" "}
         <a
           href="https://victormayowa.vercel.app"
           target="_blank"
           rel="noopener noreferrer"
           className="brand-name"
         >
-          Victor Mayowa
+          Agu Ebuka
         </a>
       </p>
-      <a
-        href="https://github.com/victormayowa185"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="github-link"
-        aria-label="GitHub"
-      >
-        <FaGithub size={24} />
-      </a>
     </footer>
   );
 };
